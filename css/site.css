@@ -1856,6 +1856,19 @@ svg use {
   border-bottom-right-radius: 4px;
 }
 
+.chat-msg--fallback {
+  display: grid;
+  gap: 10px;
+}
+
+.chat-msg--fallback p {
+  margin: 0;
+}
+
+.chat-msg--fallback .btn {
+  justify-self: start;
+}
+
 .chatbox__suggestions {
   display: flex;
   flex-wrap: wrap;

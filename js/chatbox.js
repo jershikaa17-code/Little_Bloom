@@ -63,12 +63,27 @@
     if (/\b(thank|thanks)\b/.test(q)) {
       return "You're welcome! Anything else you'd like to know?";
     }
-    return `I'm not totally sure about that one — call us at ${s.phone} or email ${s.email} and we'll help directly. You can also ask about fees, timings, programs or our address.`;
+    return null;
+  };
+
+  const addFallback = () => {
+    const row = document.createElement('div');
+    row.className = 'chat-msg chat-msg--bot chat-msg--fallback';
+    row.innerHTML = `
+      <p>I'm not totally sure about that one — but our team can help directly.</p>
+      <button type="button" class="btn btn--primary btn--sm" data-action="open-message">Message us</button>
+    `;
+    messages.appendChild(row);
+    messages.scrollTop = messages.scrollHeight;
   };
 
   const reply = (text) => {
     addMessage(text, 'user');
-    setTimeout(() => addMessage(answer(text), 'bot'), 350);
+    setTimeout(() => {
+      const result = answer(text);
+      if (result) addMessage(result, 'bot');
+      else addFallback();
+    }, 350);
   };
 
   form.addEventListener('submit', (event) => {
