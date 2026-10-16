@@ -1,0 +1,435 @@
+/*
+ * Section motion (driven by js/motion.js). Idle loops only run while their
+ * section is on screen (.in-view), and html.motion is only set when the
+ * visitor hasn't asked for reduced motion.
+ */
+
+/* ---------- Scroll progress ---------- */
+
+.scroll-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pink), var(--yellow) 50%, var(--blue));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+/* ---------- Decorations ---------- */
+
+.section > .container,
+.site-footer > .container {
+  position: relative;
+  z-index: 1;
+}
+
+.site-footer {
+  position: relative;
+  overflow: clip;
+}
+
+.deco {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.deco__item {
+  position: absolute;
+  width: var(--size);
+  translate: -50% calc(-50% + var(--parallax, 0) * var(--depth) * -90px);
+  opacity: 0.6;
+}
+
+.deco__item svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.deco-shape--cloud svg { aspect-ratio: 64 / 40; }
+.deco-shape--squiggle svg { aspect-ratio: 64 / 20; }
+.deco-shape--star svg,
+.deco-shape--ring svg,
+.deco-shape--heart svg,
+.deco-shape--sparkle svg { aspect-ratio: 1; }
+
+.deco--yellow { color: #ffd45e; }
+.deco--pink   { color: #ff9cbc; }
+.deco--blue   { color: #9fd3ff; }
+.deco--lilac  { color: #c9b5ff; }
+.deco--mint   { color: #9be6c8; }
+.deco--white  { color: #ffffff; opacity: 0.5; }
+
+.deco-shape--cloud { opacity: 0.45; }
+
+.motion .in-view .deco__item--float   { animation: deco-float 8s var(--ease-soft) infinite; }
+.motion .in-view .deco__item--drift   { animation: deco-drift 18s var(--ease-soft) infinite alternate; }
+.motion .in-view .deco__item--twinkle { animation: deco-twinkle 3.2s var(--ease-soft) infinite; }
+.motion .in-view .deco__item--spin    { animation: deco-spin 40s linear infinite; }
+.motion .in-view .deco__item--sway    { animation: deco-sway 7s var(--ease-soft) infinite; }
+
+.deco__item { animation-delay: calc(var(--d) * -1.7s); }
+
+@keyframes deco-float {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50%      { transform: translateY(-14px) rotate(6deg); }
+}
+
+@keyframes deco-drift {
+  from { transform: translateX(-18px); }
+  to   { transform: translateX(22px); }
+}
+
+@keyframes deco-twinkle {
+  0%, 100% { transform: scale(0.7) rotate(0deg); opacity: 0.35; }
+  50%      { transform: scale(1.15) rotate(45deg); opacity: 0.95; }
+}
+
+@keyframes deco-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes deco-sway {
+  0%, 100% { transform: translateX(0) rotate(-4deg); }
+  50%      { transform: translateX(10px) rotate(4deg); }
+}
+
+/* ---------- Video-tour popup ---------- */
+
+.motion .video-card__ring {
+  animation: video-ring-pulse 2.4s var(--ease-out) infinite;
+}
+
+@keyframes video-ring-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(252, 93, 147, 0.35); }
+  80%  { box-shadow: 0 0 0 22px rgba(252, 93, 147, 0); }
+  100% { box-shadow: 0 0 0 22px rgba(252, 93, 147, 0); }
+}
+
+/* ---------- About hero collage ---------- */
+
+.motion .in-view .about-hero__ring {
+  animation: deco-spin 50s linear infinite;
+}
+
+.motion .in-view .about-hero__blob {
+  animation: about-blob-float 6s var(--ease-soft) infinite;
+}
+
+.about-hero__blob--a { animation-delay: -1s; }
+.about-hero__blob--b { animation-delay: -3s; }
+.about-hero__blob--c { animation-delay: -4.5s; }
+.about-hero__blob--d { animation-delay: -2s; }
+
+@keyframes about-blob-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@media (max-width: 600px) {
+  .deco__item {
+    width: calc(var(--size) * 0.7);
+  }
+}
+
+/* ---------- Eyebrow sparkle ---------- */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eyebrow__spark {
+  width: 16px;
+  height: 16px;
+  color: var(--yellow);
+  flex: none;
+}
+
+.motion .in-view .eyebrow__spark {
+  animation: deco-twinkle 2.6s var(--ease-soft) infinite;
+}
+
+/* ---------- Section titles: letter reveal, ripple, hover lift ---------- */
+
+.word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.char {
+  display: inline-block;
+  transform-origin: 50% 80%;
+}
+
+.accent.is-split {
+  background: none;
+  color: inherit;
+}
+
+.accent.is-split .char {
+  background-image: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.accent--pink.is-split .char { background-image: linear-gradient(135deg, #f04a86, #ff7aa6); }
+.accent--blue.is-split .char { background-image: linear-gradient(135deg, #2f93ea, #5bb9ff); }
+
+.motion .section__head .char {
+  opacity: 0;
+  transform: translateY(0.45em) rotate(8deg);
+  transition:
+    opacity 0.45s var(--ease-out) calc(var(--c) * 28ms + 120ms),
+    transform 0.7s var(--ease-out) calc(var(--c) * 28ms + 120ms);
+}
+
+.motion .section__head.is-in .char {
+  opacity: 1;
+  transform: none;
+}
+
+.motion .in-view .section__head.is-in .accent .char {
+  animation: char-ripple 6.5s var(--ease-soft) infinite;
+  animation-delay: calc(1.8s + var(--c) * 70ms);
+}
+
+@keyframes char-ripple {
+  0%, 10%, 100% { transform: none; }
+  5%            { transform: translateY(-0.14em) scale(1.06); }
+}
+
+/* ---------- Cards: tilt, lift and spotlight ---------- */
+
+.tile,
+.stat {
+  position: relative;
+}
+
+.motion .tiltable {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition:
+    opacity 0.7s var(--ease-out) calc(var(--i, 0) * 80ms),
+    translate 0.7s var(--ease-out) calc(var(--i, 0) * 80ms),
+    transform 0.6s var(--ease-out),
+    box-shadow 0.3s;
+}
+
+.motion .tiltable:hover {
+  --lift: -6px;
+}
+
+.motion .card.tiltable:hover {
+  box-shadow: 0 26px 50px -22px rgba(27, 47, 91, 0.3);
+}
+
+.motion .tiltable.is-tilting {
+  transition:
+    opacity 0.7s var(--ease-out),
+    translate 0.7s var(--ease-out),
+    transform 0.15s linear,
+    box-shadow 0.3s;
+}
+
+.motion .tiltable::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.6), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.motion .tiltable:hover::after {
+  opacity: 1;
+}
+
+/* ---------- Icons ---------- */
+
+.motion .in-view .icon-bubble {
+  animation: bubble-bob 4.5s var(--ease-soft) infinite;
+  animation-delay: calc(var(--i, 0) * -0.8s);
+}
+
+@keyframes bubble-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+.icon-bubble,
+.tile__icon {
+  transition: scale 0.3s var(--ease-out), rotate 0.3s var(--ease-out);
+}
+
+.motion .card:hover .icon-bubble,
+.motion .contact__list li:hover .icon-bubble {
+  scale: 1.1;
+}
+
+.motion .card:hover .icon-bubble svg,
+.motion .tile:hover .tile__icon svg {
+  animation: icon-wiggle 0.6s var(--ease-out);
+}
+
+.motion .contact__list li:hover .icon-bubble svg {
+  animation: icon-spin 0.6s var(--ease-out);
+}
+
+.motion .tile:hover .tile__icon {
+  scale: 1.12;
+  rotate: -6deg;
+}
+
+@keyframes icon-wiggle {
+  0%, 100% { transform: rotate(0); }
+  25%      { transform: rotate(-14deg) scale(1.1); }
+  55%      { transform: rotate(10deg) scale(1.1); }
+  80%      { transform: rotate(-4deg); }
+}
+
+.motion .program-stage__visual:hover svg {
+  animation: icon-spin 0.8s var(--ease-out);
+}
+
+@keyframes icon-spin {
+  from { transform: rotate(-360deg) scale(0.8); }
+}
+
+/* App tiles float gently, out of step with each other. */
+.motion .in-view .tile.is-in {
+  animation: tile-float 6s var(--ease-soft) infinite;
+  animation-delay: calc(var(--i, 0) * -1s);
+}
+
+@keyframes tile-float {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -4px; }
+}
+
+.motion .tile.is-tilting,
+.motion .tile:hover {
+  animation-play-state: paused;
+}
+
+/* ---------- Checklists draw in ---------- */
+
+.motion .reveal .ticks li {
+  opacity: 0;
+  translate: -10px 0;
+  transition:
+    opacity 0.4s var(--ease-out) calc(var(--i, 0) * 80ms + var(--j, 0) * 70ms + 300ms),
+    translate 0.5s var(--ease-out) calc(var(--i, 0) * 80ms + var(--j, 0) * 70ms + 300ms);
+}
+
+.motion .reveal.is-in .ticks li {
+  opacity: 1;
+  translate: none;
+}
+
+.motion .reveal .ticks svg use {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  transition: stroke-dashoffset 0.5s var(--ease-out) calc(var(--i, 0) * 80ms + var(--j, 0) * 70ms + 420ms);
+}
+
+.motion .reveal.is-in .ticks svg use {
+  stroke-dashoffset: 0;
+}
+
+/* ---------- Buttons: light sweep on the pink buttons ---------- */
+
+.btn--primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.motion .btn--primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.42) 50%, transparent 65%);
+  translate: -110% 0;
+  animation: btn-shine 5s var(--ease-soft) infinite;
+  pointer-events: none;
+}
+
+@keyframes btn-shine {
+  0%, 70% { translate: -110% 0; }
+  100%    { translate: 110% 0; }
+}
+
+/* ---------- Contact icons: gentle tilt-sway, out of step with each other ---------- */
+
+.contact__list .icon-bubble {
+  position: relative;
+}
+
+.motion .in-view .contact__list .icon-bubble {
+  animation: contact-icon-sway 5s var(--ease-soft) infinite;
+}
+
+.motion .in-view .contact__list li:nth-child(2) .icon-bubble { animation-delay: -1.2s; }
+.motion .in-view .contact__list li:nth-child(3) .icon-bubble { animation-delay: -2.4s; }
+.motion .in-view .contact__list li:nth-child(4) .icon-bubble { animation-delay: -3.6s; }
+
+@keyframes contact-icon-sway {
+  0%, 100% { rotate: -6deg; }
+  50%      { rotate: 6deg; }
+}
+
+/* ---------- Stats & footer ---------- */
+
+.pricing-plan__amount {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+.motion .in-view .footer__brand-star {
+  animation: footer-star-spin 6s var(--ease-soft) infinite;
+}
+
+@keyframes footer-star-spin {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50%      { transform: rotate(14deg) scale(1.08); }
+}
+
+.site-footer a {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat;
+  transition: background-size 0.3s var(--ease-out);
+}
+
+.site-footer a:hover {
+  text-decoration: none;
+  background-size: 100% 2px;
+}
+
+/* ---------- Off screen: pause everything ---------- */
+
+.motion .section:not(.in-view) *,
+.motion .site-footer:not(.in-view) * {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deco__item,
+  .eyebrow__spark,
+  .icon-bubble,
+  .btn--primary::before,
+  .contact__list .icon-bubble::after,
+  .char {
+    animation: none !important;
+  }
+
+  .scroll-progress {
+    display: none;
+  }
+}
